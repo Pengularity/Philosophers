@@ -6,11 +6,16 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:32:04 by pengu             #+#    #+#             */
-/*   Updated: 2023/09/28 18:41:22 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/09/28 23:55:26 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
+
+long int	timeval_to_millis(struct timeval *tv)
+{
+	return ((tv->tv_sec * 1000) + (tv->tv_usec / 1000));
+}
 
 long int	current_time(void)
 {

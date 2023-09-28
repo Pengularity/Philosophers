@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 20:37:52 by pengu             #+#    #+#             */
-/*   Updated: 2023/09/28 18:37:03 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/09/28 23:11:20 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_config
 typedef struct s_simulation
 {
 	pthread_mutex_t		*forks;
+	pthread_mutex_t		print_mutex;
 	int					philo_nb;
 	t_config			*config;
 	t_simulation_status	status;
@@ -49,6 +50,13 @@ typedef struct s_philosopher
 	int				times_eaten;
 	t_simulation	*simulation;
 }						t_philosopher;
+
+typedef struct s_data
+{
+	t_philosopher	*philo;
+	t_simulation	*simulation;
+	t_config		*config;
+}				t_data;
 
 void		*philosopher_routine(void *arg);
 long int	current_time(void);
