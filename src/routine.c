@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:25:06 by pengu             #+#    #+#             */
-/*   Updated: 2023/09/28 23:56:41 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/09/29 00:19:20 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,16 +77,7 @@ void	*philosopher_routine(void *arg)
 		think(data);
 		eat(data);
 		sleep(data);
-		time_last_meal = current_time()
-			- (timeval_to_millis(&data->philo->last_time_ate));
-		if (time_last_meal > simulation->config->time_to_die)
-		{
-			print_status(data, "died");
-			pthread_mutex_lock(&simulation->print_mutex);
-			simulation->status = PHILOSOPHER_DIED;
-			pthread_mutex_unlock(&simulation->print_mutex);
-			break ;
-		}
+
 	}
 	return (NULL);
 }
