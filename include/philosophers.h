@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 20:37:52 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/03 15:33:48 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/03 18:22:28 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_simulation
 	pthread_mutex_t		*forks;
 	pthread_mutex_t		print_mutex;
 	pthread_mutex_t		status_mutex;
+	pthread_mutex_t		times_eaten_mutex;
 	int					philo_nb;
 }					t_simulation;
 

@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 00:12:24 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/10/03 15:35:59 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/03 18:18:48 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,21 @@ t_simulation_status	get_status(t_data *data)
 	return (current_status);
 }
 
+void	check_all_ate_enough(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->simulation->philo_nb)
+	{
+		if (data->philo[i].times_eaten < data->config->nb_must_eat)
+			return ;
+		i++;
+	}
+	update_status(data, ALL_ATE_REQUIRED_TIMES);
+}
+
+
 void	*death_monitoring(void *arg)
 {
 	t_data			*data;
@@ -48,6 +63,7 @@ void	*death_monitoring(void *arg)
 			update_status(data, PHILOSOPHER_DIED);
 			break ;
 		}
+		check_all_ate_enough(data);
 		// Add a short sleep to prevent tight looping and reduce CPU usage
 		usleep(1000); // for example, sleep for 1ms
 	}
