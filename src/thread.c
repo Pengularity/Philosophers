@@ -6,11 +6,29 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 00:12:24 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/09/29 00:21:27 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/03 15:35:59 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
+
+void	update_status(t_data *data, t_simulation_status new_status)
+{
+	pthread_mutex_lock(&data->simulation->status_mutex);
+	data->status = new_status;
+	pthread_mutex_unlock(&data->simulation->status_mutex);
+}
+
+t_simulation_status	get_status(t_data *data)
+{
+	t_simulation_status	current_status;
+
+	pthread_mutex_lock(&data->simulation->status_mutex);
+	current_status = data->status;
+	pthread_mutex_unlock(&data->simulation->status_mutex);
+
+	return (current_status);
+}
 
 void	*death_monitoring(void *arg)
 {
@@ -19,18 +37,15 @@ void	*death_monitoring(void *arg)
 	long int		time_since_last_meal;
 
 	data = (t_data *)arg;
-	simulation = data->philo->simulation;
-
-	while (simulation->status == ONGOING)
+	simulation = data->simulation;
+	while (data->status == ONGOING)
 	{
 		time_since_last_meal = current_time()
 			- (timeval_to_millis(&data->philo->last_time_ate));
-		if (time_since_last_meal > simulation->config->time_to_die)
+		if (time_since_last_meal > data->config->time_to_die)
 		{
 			print_status(data, "died");
-			pthread_mutex_lock(&simulation->print_mutex);
-			simulation->status = PHILOSOPHER_DIED;
-			pthread_mutex_unlock(&simulation->print_mutex);
+			update_status(data, PHILOSOPHER_DIED);
 			break ;
 		}
 		// Add a short sleep to prevent tight looping and reduce CPU usage
