@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:25:06 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/03 18:24:50 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/07 23:06:14 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,11 @@ void	print_status(t_data *data, char *status)
 void	think(t_data *data)
 {
 	print_status(data, "is thinking");
-	// Implementation delay thinking.
 }
 
 void	eat(t_data *data)
 {
-	if (data->philo->id == data->simulation->philo_nb)
+	if (data->philo->id == data->config->philo_nb)
 		(pthread_mutex_lock(data->philo->right_fork),
 			pthread_mutex_lock(data->philo->left_fork));
 	else

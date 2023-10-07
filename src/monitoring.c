@@ -6,11 +6,16 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 00:12:24 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/10/07 18:39:01 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/07 22:51:50 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
+
+long int	timeval_to_millis(struct timeval *tv)
+{
+	return ((tv->tv_sec * 1000) + (tv->tv_usec / 1000));
+}
 
 void	update_status(t_data *data, t_simulation_status new_status)
 {
@@ -35,7 +40,7 @@ void	check_all_ate_enough(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < data->simulation->philo_nb)
+	while (i < data->config->philo_nb)
 	{
 		if (data->philo[i].times_eaten < data->config->nb_must_eat)
 			return ;
@@ -45,7 +50,7 @@ void	check_all_ate_enough(t_data *data)
 }
 
 
-void	*death_monitoring(void *arg)
+void	*monitoring(void *arg)
 {
 	t_data			*data;
 	t_simulation	*simulation;

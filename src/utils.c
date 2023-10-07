@@ -6,16 +6,11 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:32:04 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/07 18:38:58 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/07 22:51:06 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
-
-long int	timeval_to_millis(struct timeval *tv)
-{
-	return ((tv->tv_sec * 1000) + (tv->tv_usec / 1000));
-}
 
 long int	current_time(void)
 {
@@ -44,3 +39,13 @@ void	ft_usleep(long int time_in_ms)
 		elapsed_time = current_time() - start_time;
 	}
 }
+
+int	ft_error(char *str)
+{
+	ft_putstr_fd("Error: ", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd("\n", 2);
+	return (0);
+}
+
+
