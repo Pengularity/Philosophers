@@ -5,77 +5,38 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/29 00:12:24 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/10/03 18:18:48 by wnguyen          ###   ########.fr       */
+/*   Created: 2023/10/07 17:58:03 by wnguyen           #+#    #+#             */
+/*   Updated: 2023/10/07 18:39:00 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
 
-void	update_status(t_data *data, t_simulation_status new_status)
+pthread_t	*create_philosophers(t_data *data)
 {
-	pthread_mutex_lock(&data->simulation->status_mutex);
-	data->status = new_status;
-	pthread_mutex_unlock(&data->simulation->status_mutex);
+	int			i;
+	pthread_t	*philosophers;
+
+	i = 0;
+	philosophers = malloc(data->simulation->philo_nb * sizeof(pthread_t));
+	if (!philosophers)
+		return (ft_error("Malloc returned NULL"));
+	while (i < data->simulation->philo_nb)
+	{
+		pthread_create(&philosophers[i], NULL, philosopher_routine, &data[i]);
+		i++;
+	}
+	return (philosophers);
 }
 
-t_simulation_status	get_status(t_data *data)
-{
-	t_simulation_status	current_status;
-
-	pthread_mutex_lock(&data->simulation->status_mutex);
-	current_status = data->status;
-	pthread_mutex_unlock(&data->simulation->status_mutex);
-
-	return (current_status);
-}
-
-void	check_all_ate_enough(t_data *data)
+void	wait_for_philosophers(pthread_t *philosophers, int philo_nb)
 {
 	int	i;
 
 	i = 0;
-	while (i < data->simulation->philo_nb)
+	while (i < philo_nb)
 	{
-		if (data->philo[i].times_eaten < data->config->nb_must_eat)
-			return ;
+		pthread_join(philosophers[i], NULL);
 		i++;
 	}
-	update_status(data, ALL_ATE_REQUIRED_TIMES);
 }
-
-
-void	*death_monitoring(void *arg)
-{
-	t_data			*data;
-	t_simulation	*simulation;
-	long int		time_since_last_meal;
-
-	data = (t_data *)arg;
-	simulation = data->simulation;
-	while (data->status == ONGOING)
-	{
-		time_since_last_meal = current_time()
-			- (timeval_to_millis(&data->philo->last_time_ate));
-		if (time_since_last_meal > data->config->time_to_die)
-		{
-			print_status(data, "died");
-			update_status(data, PHILOSOPHER_DIED);
-			break ;
-		}
-		check_all_ate_enough(data);
-		// Add a short sleep to prevent tight looping and reduce CPU usage
-		usleep(1000); // for example, sleep for 1ms
-	}
-	return (NULL);
-}
-
-// Create a thread for each routine and monitoring.
-
-// pthread_t philosopher_thread, monitor_thread;
-
-// pthread_create(&philosopher_thread, NULL, philosopher_routine, &data);
-// pthread_create(&monitor_thread, NULL, monitor_routine, &data);
-
-// pthread_join(philosopher_thread, NULL);
-// pthread_join(monitor_thread, NULL);
