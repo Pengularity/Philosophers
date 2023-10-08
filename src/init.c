@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 20:46:20 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/07 23:16:58 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/08 19:56:23 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,18 @@ int	is_positive(char *str)
 {
 	int	i;
 
-	if (!str || str[0] == '0')
+	if (!str || str[0] == '\0')
 		return (0);
 	i = 0;
+	while (str[i] == '0')
+		i++;
 	while (str[i])
 	{
 		if (str[i] < '0' || str[i] > '9')
 			return (0);
 		i++;
 	}
-	return (i > 0 && ft_atoi(str) > 0);
+	return (i > 0);
 }
 
 t_data	*init_data_structure(int philo_nb)
@@ -36,20 +38,22 @@ t_data	*init_data_structure(int philo_nb)
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
+	data->config = malloc(sizeof(t_config));
 	data->simulation = malloc(sizeof(t_simulation));
 	data->philo = malloc(sizeof(t_philosopher) * philo_nb);
 	data->simulation->forks = malloc(sizeof(pthread_mutex_t) * philo_nb);
 	if (!data->simulation || !data->philo || !data->simulation->forks)
 		return (cleanup(data, NULL), NULL);
 	pthread_mutex_init(&data->simulation->print_mutex, NULL);
+	data->simulation->start_time = current_time();
 	i = 0;
-	while (i < data->config->philo_nb)
+	while (i < philo_nb)
 	{
 		pthread_mutex_init(&data->simulation->forks[i], NULL);
 		data->philo[i].id = i + 1;
 		data->philo[i].left_fork = &data->simulation->forks[i];
 		data->philo[i].right_fork = &data->simulation->forks[(i + 1)
-			% data->config->philo_nb];
+			% philo_nb];
 		gettimeofday(&data->philo[i].last_time_ate, NULL);
 		data->philo[i].times_eaten = 0;
 		i++;
@@ -62,12 +66,10 @@ int	parse_args(int ac, char **av, t_data *data)
 	int	i;
 
 	i = 1;
-	if (ac < 5 || ac > 6)
-		return (ft_error(" Invalid numbers of arguments"));
 	while (i < ac)
 	{
 		if (!is_positive(av[i]))
-			return (ft_error("All arguments must be positive"));
+			return (ft_error("Invalid arguments"));
 		i++;
 	}
 	data->config->philo_nb = ft_atoi(av[1]);
@@ -81,7 +83,7 @@ int	parse_args(int ac, char **av, t_data *data)
 	return (1);
 }
 
-void	cleanup(pthread_t *philosophers, t_data *data)
+void	cleanup(t_data *data, pthread_t *philosophers)
 {
 	int	i;
 

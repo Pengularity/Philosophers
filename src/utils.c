@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:32:04 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/07 22:51:06 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/08 19:50:22 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ long int	current_time(void)
 	return (time);
 }
 
-void	ft_usleep(long int time_in_ms)
+void	ft_sleep(long int time_in_ms)
 {
 	long int	start_time;
 	long int	elapsed_time;
@@ -42,9 +42,9 @@ void	ft_usleep(long int time_in_ms)
 
 int	ft_error(char *str)
 {
-	ft_putstr_fd("Error: ", 2);
+	ft_putstr_fd("\033[91mError: ", 2);
 	ft_putstr_fd(str, 2);
-	ft_putstr_fd("\n", 2);
+	ft_putstr_fd("\033[0m\n", 2);
 	return (0);
 }
 

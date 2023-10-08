@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 20:37:52 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/07 23:02:06 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/08 19:43:52 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <stdlib.h>
+# include <unistd.h>
+# include <stdio.h>
 
 typedef enum e_simulation_status
 {
@@ -39,6 +41,7 @@ typedef struct s_simulation
 	pthread_mutex_t		print_mutex;
 	pthread_mutex_t		status_mutex;
 	pthread_mutex_t		times_eaten_mutex;
+	long int			start_time;
 }					t_simulation;
 
 typedef struct s_config
@@ -62,7 +65,7 @@ typedef struct s_data
 
 int			parse_args(int ac, char **av, t_data *data);
 t_data		*init_data_structure(int philo_nb);
-void		cleanup(pthread_t *philosophers, t_data *data);
+void		cleanup(t_data *data, pthread_t *philosophers);
 
 /*libft*/
 
@@ -85,6 +88,11 @@ void		update_status(t_data *data, t_simulation_status new_status);
 
 int			ft_error(char *str);
 long int	current_time(void);
-void		ft_usleep(long int time_in_ms);
+void		ft_sleep(long int time_in_ms);
+
+/*thread*/
+
+pthread_t	*create_philosophers(t_data *data);
+void		wait_for_philosophers(pthread_t *philosophers, int philo_nb);
 
 #endif

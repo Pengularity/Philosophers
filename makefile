@@ -6,11 +6,13 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE)
 
-SRCS = src/philosopher.c \
-			src/eat.c \
-			src/death_monitoring.c \
+SRCS = src/init.c \
+			src/libft.c \
+			src/monitoring.c \
 			src/utils.c \
 			src/main.c \
+			src/routine.c \
+			src/thread.c \
 
 OBJS = $(SRCS:.c=.o)
 

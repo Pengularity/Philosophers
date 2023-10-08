@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 00:12:24 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/10/07 22:51:50 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/08 20:12:19 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,24 +53,23 @@ void	check_all_ate_enough(t_data *data)
 void	*monitoring(void *arg)
 {
 	t_data			*data;
-	t_simulation	*simulation;
 	long int		time_since_last_meal;
 
 	data = (t_data *)arg;
-	simulation = data->simulation;
 	while (data->status == ONGOING)
 	{
 		time_since_last_meal = current_time()
 			- (timeval_to_millis(&data->philo->last_time_ate));
 		if (time_since_last_meal > data->config->time_to_die)
 		{
-			print_status(data, "died");
+			print_status(data, "\033[91mdied\033[0m");
 			update_status(data, PHILOSOPHER_DIED);
 			break ;
 		}
 		check_all_ate_enough(data);
 		// Add a short sleep to prevent tight looping and reduce CPU usage
 		usleep(1000); // for example, sleep for 1ms
+		get_status(data);
 	}
 	return (NULL);
 }
