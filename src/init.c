@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 20:46:20 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/08 19:56:23 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/12 05:03:40 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,37 +28,6 @@ int	is_positive(char *str)
 		i++;
 	}
 	return (i > 0);
-}
-
-t_data	*init_data_structure(int philo_nb)
-{
-	t_data	*data;
-	int		i;
-
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return (NULL);
-	data->config = malloc(sizeof(t_config));
-	data->simulation = malloc(sizeof(t_simulation));
-	data->philo = malloc(sizeof(t_philosopher) * philo_nb);
-	data->simulation->forks = malloc(sizeof(pthread_mutex_t) * philo_nb);
-	if (!data->simulation || !data->philo || !data->simulation->forks)
-		return (cleanup(data, NULL), NULL);
-	pthread_mutex_init(&data->simulation->print_mutex, NULL);
-	data->simulation->start_time = current_time();
-	i = 0;
-	while (i < philo_nb)
-	{
-		pthread_mutex_init(&data->simulation->forks[i], NULL);
-		data->philo[i].id = i + 1;
-		data->philo[i].left_fork = &data->simulation->forks[i];
-		data->philo[i].right_fork = &data->simulation->forks[(i + 1)
-			% philo_nb];
-		gettimeofday(&data->philo[i].last_time_ate, NULL);
-		data->philo[i].times_eaten = 0;
-		i++;
-	}
-	return (data);
 }
 
 int	parse_args(int ac, char **av, t_data *data)
@@ -83,31 +52,59 @@ int	parse_args(int ac, char **av, t_data *data)
 	return (1);
 }
 
-void	cleanup(t_data *data, pthread_t *philosophers)
+t_data	*init_malloc(int philo_nb)
 {
-	int	i;
+	t_data	*data;
 
-	i = 0;
+	data = malloc(sizeof(t_data));
 	if (!data)
-		return ;
-	if (data->simulation)
+		return (NULL);
+	data->config = malloc(sizeof(t_config));
+	data->simulation = malloc(sizeof(t_simulation));
+	data->philo = malloc(sizeof(t_philosopher) * philo_nb);
+	data->simulation->forks = malloc(sizeof(pthread_mutex_t) * philo_nb);
+	if (!data->simulation || !data->philo || !data->simulation->forks)
 	{
-		if (data->simulation->forks)
-		{
-			while (i < data->config->philo_nb)
-			{
-				pthread_mutex_destroy(&data->simulation->forks[i]);
-				if (philosophers)
-					pthread_join(philosophers[i], NULL);
-				i++;
-			}
-			free(data->simulation->forks);
-		}
-		pthread_mutex_destroy(&data->simulation->print_mutex);
-		pthread_mutex_destroy(&data->simulation->status_mutex);
-		free(data->simulation);
+		cleanup(data, NULL);
+		return (NULL);
 	}
-	free(data->philo);
-	free(data);
-	free(philosophers);
+	return (data);
+}
+
+void	init_philosopher(t_data *data, int i)
+{
+	pthread_mutex_init(&data->philo[i].times_eaten_mutex, NULL);
+	pthread_mutex_init(&data->simulation->forks[i], NULL);
+	data->philo[i].id = i + 1;
+	data->philo[i].left_fork = &data->simulation->forks[i];
+	data->philo[i].right_fork = &data->simulation->forks[(i + 1)
+		% data->config->philo_nb];
+	gettimeofday(&data->philo[i].last_time_ate, NULL);
+	data->philo[i].times_eaten = 0;
+	data->philo[i].ate_enough = 0;
+}
+
+t_data	*init_data_structure(int philo_nb)
+{
+	t_data	*data;
+	int		i;
+
+	data = init_malloc(philo_nb);
+	if (!data)
+		return (NULL);
+	data->config->philo_nb = philo_nb;
+	pthread_mutex_init(&data->simulation->print_mutex, NULL);
+	pthread_mutex_init(&data->philo->times_eaten_mutex, NULL);
+	pthread_mutex_init(&data->philo->last_time_ate_mutex, NULL);
+	pthread_mutex_init(&data->simulation->ate_enough_mutex, NULL);
+	pthread_mutex_init(&data->simulation->dead_mutex, NULL);
+	data->simulation->start_time = current_time();
+	data->status = ONGOING;
+	i = 0;
+	while (i < philo_nb)
+	{
+		init_philosopher(data, i);
+		i++;
+	}
+	return (data);
 }

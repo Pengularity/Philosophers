@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 00:12:24 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/10/08 20:12:19 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/12 05:04:22 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,42 +35,37 @@ t_simulation_status	get_status(t_data *data)
 	return (current_status);
 }
 
-void	check_all_ate_enough(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->config->philo_nb)
-	{
-		if (data->philo[i].times_eaten < data->config->nb_must_eat)
-			return ;
-		i++;
-	}
-	update_status(data, ALL_ATE_REQUIRED_TIMES);
-}
-
-
 void	*monitoring(void *arg)
 {
-	t_data			*data;
-	long int		time_since_last_meal;
+	t_data		*data;
+	long int	time_since_last_meal;
 
 	data = (t_data *)arg;
-	while (data->status == ONGOING)
+	while (1)
 	{
+		pthread_mutex_lock(&data->philo->last_time_ate_mutex);
 		time_since_last_meal = current_time()
-			- (timeval_to_millis(&data->philo->last_time_ate));
+			- timeval_to_millis(&data->philo->last_time_ate);
 		if (time_since_last_meal > data->config->time_to_die)
 		{
 			print_status(data, "\033[91mdied\033[0m");
 			update_status(data, PHILOSOPHER_DIED);
+			pthread_mutex_unlock(&data->philo->last_time_ate_mutex);
 			break ;
 		}
-		check_all_ate_enough(data);
-		// Add a short sleep to prevent tight looping and reduce CPU usage
-		usleep(1000); // for example, sleep for 1ms
-		get_status(data);
+		pthread_mutex_unlock(&data->philo->last_time_ate_mutex);
+		pthread_mutex_lock(&data->simulation->ate_enough_mutex);
+		if (data->simulation->nb_ate_enough == data->config->philo_nb)
+		{
+			pthread_mutex_unlock(&data->simulation->ate_enough_mutex);
+			update_status(data, ALL_ATE_REQUIRED_TIMES);
+			printf("ALL ATE REQUIRED TIMES\n");
+			break ;
+		}
+		pthread_mutex_unlock(&data->simulation->ate_enough_mutex);
+		usleep(1000);
 	}
+
 	return (NULL);
 }
 

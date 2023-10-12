@@ -13,13 +13,14 @@ SRCS = src/init.c \
 			src/main.c \
 			src/routine.c \
 			src/thread.c \
+			src/free.c \
 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS) $(INCLUDE)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lpthread
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lpthread -g
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
