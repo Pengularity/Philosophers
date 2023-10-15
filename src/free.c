@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 02:21:32 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/10/12 05:05:53 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/15 21:16:46 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ void	cleanup(t_data *data, pthread_t *philosophers)
 		return ;
 	if (data->simulation)
 	{
-		pthread_mutex_destroy(&data->simulation->print_mutex);
-		pthread_mutex_destroy(&data->simulation->status_mutex);
+		// pthread_mutex_destroy(&data->simulation->print_mutex);
+		// pthread_mutex_destroy(&data->simulation->status_mutex);
 		pthread_mutex_destroy(&data->philo->times_eaten_mutex);
 		pthread_mutex_destroy(&data->philo->last_time_ate_mutex);
 		pthread_mutex_destroy(&data->simulation->ate_enough_mutex);

@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/07 17:58:03 by wnguyen           #+#    #+#             */
-/*   Updated: 2023/10/12 05:17:31 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/15 21:08:00 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ pthread_t	*create_philosophers(t_data *data)
 		*data_copy = *data;
 		data_copy->philo = &data->philo[i];
 		pthread_create(&philosophers[i], NULL, philosopher_routine, data_copy);
-		printf("Thread for philosopher %d created\n", i + 1);
 		i++;
 	}
 	return (philosophers);

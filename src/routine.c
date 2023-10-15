@@ -6,7 +6,7 @@
 /*   By: wnguyen <wnguyen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:25:06 by pengu             #+#    #+#             */
-/*   Updated: 2023/10/12 05:18:16 by wnguyen          ###   ########.fr       */
+/*   Updated: 2023/10/15 21:25:08 by wnguyen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ void	is_eating(t_data *data)
 		pthread_mutex_lock(&data->simulation->ate_enough_mutex);
 		data->philo->ate_enough = 1;
 		data->simulation->nb_ate_enough++;
-		printf("NB PHILO FINISHED : %d\n", data->simulation->nb_ate_enough);
 		pthread_mutex_unlock(&data->simulation->ate_enough_mutex);
 	}
 	pthread_mutex_unlock(data->philo->left_fork);
@@ -60,6 +59,7 @@ void	is_sleeping_and_thinking(t_data *data)
 	print_status(data, "\033[94mis sleeping\033[0m");
 	ft_sleep(data->config->time_to_sleep);
 	print_status(data, "\033[92mis thinking\033[0m");
+	usleep(3000);
 }
 
 void	*philosopher_routine(void *arg)
@@ -72,13 +72,12 @@ void	*philosopher_routine(void *arg)
 
 	while (get_status(data) == ONGOING)
 	{
-		printf("%d\n", data->philo->ate_enough);
 		is_eating(data);
 		if (data->philo->ate_enough == 1)
-			{
-				free(data);
-				break ;
-			}
+		{
+			free(data);
+			break ;
+		}
 		is_sleeping_and_thinking(data);
 	}
 
